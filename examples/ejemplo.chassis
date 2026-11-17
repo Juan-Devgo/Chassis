@@ -1,0 +1,199 @@
+mcps: {
+	"provider1": {
+		transport: remote,
+		servers: [
+			"supabase-mcp": {
+			  label: "Supabase MCP",
+				url: "https://mcp.supabase.dev",
+				headers: {
+				  Authorization: "Bearer tu_token_aqui",
+				},
+			},
+			"context7": {
+			  label: "Context7",
+				url: "https://context7.com",
+			},
+		],
+	},
+	"provider2": {
+	  transport: local,
+		servers: [
+		  "postgres-mcp": {
+				label: "Local PostgreSQL",
+				command: "pnpm",
+				args: [
+				  "-y",
+				  "@paquete/mcp-postgresql",
+				],
+				env: {
+				  "DB_USER": "usuario",
+				  "DB_PASSW": "clave_secreta",
+				},
+			},
+		],
+	},
+}
+
+skills: {
+  "provider1": {
+    access: remote,
+    contexts: [
+      "find-skills": {
+        command: "npx",
+        args: [
+          "skills",
+          "add",
+        ],
+        url: "https://github.com/vercel-labs/skills",
+        options: [
+          "--skill find-skills",
+        ],
+      },
+      
+      "grill-me": {
+        command: "npx",
+        args: [
+          "skills",
+          "add",
+        ],
+        url: "https://github.com/mattpocock/skills",
+        options: [
+          "--skill grill-me",
+        ],
+      },
+    ],
+  },
+  "provider2": {
+    access: local,
+    contexts: [
+      "sdd-spec": {
+        path: "/home/user/SDD/spec.md",
+      },
+      "sdd-plan": {
+        path: "../../SDD/plan.md",
+      },
+    ],
+  },
+}
+
+agents: {
+  "providerA": {
+    access: remote,
+    contexts: [
+      "spec-kit-planner": {
+        command: "npx",
+        args: [
+          "agents",
+          "add",
+        ],
+        url: "https://github.com/spec-kit/agents",
+        options: [
+          "--agent planner",
+        ],
+        model: "claude-opus-5-5",
+        permissions: {
+          tools: "all",
+          files: [
+            all: {
+              on: "*",
+              read: true,
+              write: true,
+              execute: true,
+            },
+          ],
+        },
+        window-size: "300k",
+      },
+    ],
+  },
+  "providerB": {
+    access: local,
+    contexts: [
+      "technician": {
+        path: "./SDD/technician.md",
+        model: "current",
+        permissions: {
+          tools: [
+            "context7", 
+            "grill-me",
+          ],
+          files: [
+            docs: {
+              on: "./docs/",
+              read: true,
+              write: true,
+              execute: false,
+            },
+          ],
+        },
+        window-size: "500k",
+      },
+      "little-question-solver": {
+        path: "./SDD/question-solver.md",
+        model: "gpt-6.1-sol",
+        permissions: {
+          tools: "none",
+          files: [
+            none: {
+              on: "*",
+              read: false,
+              write: false,
+              execute: false,
+            },
+          ],
+        },
+        window-size: "100k",
+      },
+    ],
+  },
+}
+
+loops: {
+  "SDD": {
+    coordinator-agent: "spec-kit-planner",
+    subagents: [
+      "clarifier",
+      "technician",
+    ],
+    principles-path: "./SDD/loop/principles.md",
+    steps: [
+      "step1": { 
+        agents: [
+          "clarifier",
+        ],
+        context-path: "./SDD/loop/step1/context.md",
+      },
+      "step2": {
+        agents: [
+          "technician",
+        ],
+        context-path: "./SDD/loop/step2/context.md",
+      },
+    ],
+    dod-path: ".SDD/loop/definition-of-done.md"
+  },
+  
+  "bug-fixing": {
+    coordinator-agent: "bug-fixing-coordinator",
+    subagents: [
+      "bug-fixer",
+      "bug-fixing-validator",
+    ],
+    principles-path: "./SDD/bug-fixing-loop/principles.md",
+    steps: [
+      "step1": {
+        agents: [
+          "bug-fixer",
+        ],
+        context-path: "./SDD/bug-fixing-loop/step1/context.md",
+      },
+      "step2": {
+        agents: [
+          "bug-fixing-validator",
+        ],
+        context-path: "./SDD/bug-fixing-loop/step2/context.md",
+      },
+    ],
+    dod-path: ".SDD/bug-fixing-loop/definition-of-done.md",
+  },  
+}
