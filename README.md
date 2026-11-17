@@ -64,7 +64,7 @@ producción vacía se muestra como `ε`:
 
 - Las listas aparecen tal como las define la gramática, recursivas por la
   derecha: `ListaX → X ColaX | ε` y `ColaX → "," ListaX | ε`.
-- Las reglas léxicas R59–R67 no se expanden: `<Str>` e `<Id>` son hojas que
+- Las reglas léxicas R59-R67 no se expanden: `<Str>` e `<Id>` son hojas que
   muestran su lexema, en lugar de derivarse carácter a carácter.
 - Leídas de izquierda a derecha, las hojas son exactamente los tokens de la
   entrada.
@@ -105,25 +105,8 @@ devuelve las hojas y `Node.find(simbolo)` los nodos de un símbolo.
 | `tests/gramatica.py` | La gramática R1–R58 como tabla, para validar los árboles |
 | `tests/` | Pruebas |
 
-## Decisiones respecto al documento de reglas
 
-- **R62 ampliada.** Dentro de una cadena se admiten, además de los símbolos
-  del documento, `?` `&` `#` `%` `+` y `\`. No hay secuencias de escape: `\` es
-  un carácter más y una cadena no puede contener comillas dobles.
-- **R65.** La regla termina con una barra `|` suelta después de `"Z"`; se trata
-  como errata (de lo contrario `<Letra>` derivaría la cadena vacía).
-- **Palabras reservadas contextuales.** Las palabras reservadas tienen la misma
-  forma léxica que `<Id>` (R63). El analizador léxico produce un único tipo de
-  token para ambas y el sintáctico decide por contexto, de modo que una clave
-  de `headers` o una regla de `files` puede llamarse, por ejemplo, `url`.
-- **Cadenas de una sola línea.** `<Car>` (R61) no incluye el salto de línea ni
-  el tabulador.
-- **Saltos de línea de Windows.** `<Esp>` (R67) no incluye `\r`; al leer un
-  archivo, CRLF se convierte en `\n` antes del análisis.
-- **Ejemplo.** El ejemplo original usaba `permission:` en la línea 134; R39
-  exige `permissions`. La copia de `examples/` tiene esa única corrección.
-
-El analizador solo comprueba la sintaxis. No verifica, por ejemplo, que los
+> El analizador solo comprueba la sintaxis. No verifica, por ejemplo, que los
 agentes citados en un loop estén definidos en `agents`, ni que no haya nombres
 repetidos.
 
